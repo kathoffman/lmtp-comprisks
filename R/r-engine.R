@@ -20,7 +20,7 @@ estimate_r <- function(training, validation, trt, cens, deterministic, shift,
     fit_task   <- initiate_sl3_task(subset(stcks$train, i & !d), "si", c(node_list[[t]], cens[[t]]), "binomial", "lmtp_id")
     tpred_task <- sw(initiate_sl3_task(stcks$train, "si", c(node_list[[t]], cens[[t]]), "binomial", "lmtp_id")) # sl3 will impute missing here, this is okay because all censored are multiplied by 0 below
     vpred_task <- sw(initiate_sl3_task(stcks$valid, "si", c(node_list[[t]], cens[[t]]), "binomial", "lmtp_id")) # same here
-    ensemble   <- initiate_ensemble("binomial", learners)
+    ensemble   <- initiate_ensemble("binomial", learners[[t]])
 
     # run SL
     fit             <- run_ensemble(ensemble, fit_task, envir = environment())

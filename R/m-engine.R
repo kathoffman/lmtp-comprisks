@@ -14,7 +14,7 @@ estimate_sub <- function(training, shifted, validation, outcome,
     fit_task   <- initiate_sl3_task(training[i & !dt, ], outcome, node_list[[tau]], outcome_type, "lmtp_id")
     shift_task <- sw(initiate_sl3_task(shifted[js, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
     valid_task <- sw(initiate_sl3_task(validation[jv, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
-    ensemble   <- initiate_ensemble(outcome_type, check_variation(training[i, ], outcome, learners))
+    ensemble   <- initiate_ensemble(outcome_type, check_variation(training[i, ], outcome, learners[[tau]]))
 
     # progress bar
     pb()
@@ -71,7 +71,7 @@ estimate_tmle <- function(training, shifted, validation, validation_shifted,
     shift_task   <- sw(initiate_sl3_task(shifted[jt, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
     vnshift_task <- sw(initiate_sl3_task(validation[jv, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
     vshift_task  <- sw(initiate_sl3_task(validation_shifted[jv, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
-    ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], outcome, learners))
+    ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], outcome, learners[[tau]]))
 
     # progress bar
     pb()
@@ -153,7 +153,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       shift_task   <- sw(initiate_sl3_task(shifted[jt, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
       vnshift_task <- sw(initiate_sl3_task(validation[jv, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
       vshift_task  <- sw(initiate_sl3_task(validation_shifted[jv, ], NULL, node_list[[tau]], NULL, "lmtp_id"))
-      ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], outcome, learners))
+      ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], outcome, learners[[tau]]))
 
       # run SL
       fit <- run_ensemble(ensemble, fit_task, envir = environment())
@@ -185,7 +185,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       shift_task   <- sw(initiate_sl3_task(shifted[jt, ], NULL, node_list[[tau]], outcome_type, "lmtp_id"))
       vnshift_task <- sw(initiate_sl3_task(validation[jv, ], NULL, node_list[[tau]], outcome_type, "lmtp_id"))
       vshift_task  <- sw(initiate_sl3_task(validation_shifted[jv, ], NULL, node_list[[tau]], outcome_type, "lmtp_id"))
-      ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], pseudo, learners))
+      ensemble     <- initiate_ensemble(outcome_type, check_variation(training[i & !dt, ], pseudo, learners[[tau]]))
 
       # run SL
       fit <- run_ensemble(ensemble, fit_task, envir = environment())
