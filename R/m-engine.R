@@ -13,7 +13,7 @@ estimate_sub <- function(training, shifted, validation, outcome,
     fit <- run_ensemble(training[i & !dt, ][[outcome]],
                         training[i & !dt, node_list[[tau]]],
                         check_variation(training[i & !dt, ][[outcome]],
-                                        learners),
+                                        learners[[tau]]),
                         outcome_type,
                         id = training[i & !dt, ][["lmtp_id"]])
     sl_weights[[tau]] <- extract_sl_weights(fit)
@@ -59,7 +59,7 @@ estimate_tmle <- function(training, shifted, validation, validation_shifted,
     fit <- run_ensemble(training[i & !dt, ][[outcome]],
                         training[i & !dt, node_list[[tau]]],
                         check_variation(training[i & !dt, ][[outcome]],
-                                        learners),
+                                        learners[[tau]]),
                         outcome_type,
                         id = training[i & !dt, ][["lmtp_id"]])
     sl_weights[[tau]] <- extract_sl_weights(fit)
@@ -121,7 +121,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       fit <- run_ensemble(training[i & !dt, ][[outcome]],
                           training[i & !dt, node_list[[tau]]],
                           check_variation(training[i & !dt, ][[outcome]],
-                                          learners),
+                                          learners[[tau]]),
                           outcome_type,
                           id = training[i & !dt, ][["lmtp_id"]])
       sl_weights[[tau]] <- extract_sl_weights(fit)
@@ -146,7 +146,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       fit <- run_ensemble(training[i & !dt, ][[pseudo]],
                           training[i & !dt, node_list[[tau]]],
                           check_variation(training[i & !dt, ][[pseudo]],
-                                          learners),
+                                          learners[[tau]]),
                           outcome_type,
                           id = training[i & !dt, ][["lmtp_id"]])
       sl_weights[[tau]] <- extract_sl_weights(fit)
