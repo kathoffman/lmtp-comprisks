@@ -4,21 +4,6 @@ no_stderr_warning <- function(estimator) {
   cli::cli_alert_warning("Standard errors aren't provided for the {estimator} estimator.")
 }
 
-no_sl3 <- function() {
-  cli::cli_text("Enhancement package, {.pkg sl3}, not detected.")
-  cli::cli_text("{.pkg sl3} can be installed with: {.code remotes::install_github('tlverse/sl3@devel')}")
-}
-
-check_sd <- function(x, learner_stack) {
-  if (sd(x) > .Machine$double.eps) {
-    out <- learner_stack
-  } else {
-    out <- sl3::Lrnr_mean
-  }
-
-  return(out)
-}
-
 check_censoring <- function(data, C, Y) {
   if (any(is.na(data[[Y]])) & is.null(C)) {
     stop("Missing outcomes detected and censoring nodes not indicated.", call. = FALSE)
@@ -80,9 +65,9 @@ check_extreme_ratio <- function(ratio) {
   return(apply(ratio, 2, function(x) pmin(x, quantile(x, 0.999))))
 }
 
-check_variation <- function(data, outcome, learners) {
-  if (sd(data[[outcome]]) < .Machine$double.eps) {
-    learners <- sl3::make_learner(sl3::Lrnr_mean)
+check_variation <- function(outcome, learners) {
+  if (sd(outcome) < .Machine$double.eps) {
+    return("SL.mean")
   }
   return(learners)
 }
@@ -118,7 +103,6 @@ check_lmtp_type <- function(fits, ref) {
     stop("Contrasts not implemented for substitution/IPW estimators.",
          call. = F)
   }
-
 }
 
 check_ref_type <- function(ref, type) {
@@ -201,14 +185,6 @@ check_folds <- function(V) {
      if (!is.list(time_vary)) {
        stop("time_vary must be a list.", call. = F)
      }
-   }
- }
-
- check_estimation_engine <- function(learners_trt, learners_outcome) {
-   if (is.null(learners_trt) & is.null(learners_outcome)) {
-     set_lmtp_options("engine", "glm")
-   } else {
-     set_lmtp_options("engine", "sl3")
    }
  }
 

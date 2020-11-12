@@ -51,7 +51,6 @@ add_scaled_y <- function(data, scaled) {
 }
 
 create_censoring_indicators <- function(data, cens, tau) {
-
   # when no censoring return TRUE for all obs
   if (is.null(cens)) {
     i <- rep(TRUE, nrow(data))
@@ -106,11 +105,7 @@ hold_lrnr_weights <- function(folds) {
 }
 
 extract_sl_weights <- function(fit) {
-  if (getOption("lmtp.engine") == "sl3") {
-    as.data.frame(fit$fit_object$full_fit$learner_fits$Lrnr_nnls_TRUE$fits)
-  } else {
-    NULL
-  }
+  fit$coef
 }
 
 pluck_weights <- function(type, x) {
@@ -164,4 +159,3 @@ create_ids <- function(data, id) {
   }
   return(out)
 }
-

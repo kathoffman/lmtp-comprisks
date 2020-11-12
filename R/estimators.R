@@ -30,10 +30,10 @@
 #' @param bounds An optional vector of the bounds for continuous outcomes. If \code{NULL},
 #'  the bounds will be taken as the minimum and maximum of the observed data.
 #'  Should be left as \code{NULL} if the outcome type is binary.
-#' @param learners_outcome An optional \code{sl3} learner stack for estimation of the outcome
-#'  regression. If not specified, will default to using a generalized linear model.
-#' @param learners_trt An optional \code{sl3} learner stack for estimation of the exposure
-#'  mechanism. If not specified, will default to using a generalized linear model.
+#' @param learners_outcome A vector of \code{SuperLearner} algorithms for estimation
+#'  of the outcome regression. Default is \code{"SL.glm"}, a main effects GLM.
+#' @param learners_trt A vector of \code{SuperLearner} algorithms for estimation
+#'  of the exposure mechanism. Default is \code{"SL.glm"}, a main effects GLM.
 #' @param folds The number of folds to be used for cross-fitting. Minimum allowable number
 #' is two folds.
 #' @param bound Determines that maximum and minimum values (scaled) predictions
@@ -61,11 +61,8 @@
 lmtp_tmle <- function(data, trt, outcome, baseline = NULL,
                       time_vary = NULL, cens = NULL, shift, k = Inf,
                       outcome_type = c("binomial", "continuous"), id = NULL,
-                      bounds = NULL, learners_outcome = NULL,
-                      learners_trt = NULL, folds = 10, bound = 1e-5) {
-
-  # setup -------------------------------------------------------------------
-
+                      bounds = NULL, learners_outcome = "SL.glm",
+                      learners_trt = "SL.glm", folds = 10, bound = 1e-5) {
   meta <- Meta$new(
     data = data,
     trt = trt,
@@ -86,22 +83,16 @@ lmtp_tmle <- function(data, trt, outcome, baseline = NULL,
 
   pb <- progressr::progressor(meta$tau*folds*2)
 
-  # propensity --------------------------------------------------------------
-
   dens_ratio <- ratio_dr(
     cf_r(meta$data, shift, folds, meta$trt, cens, meta$determ, meta$tau,
          meta$node_list$trt, learners_trt, pb, meta$weights_r),
     folds
   )
 
-  # tmle --------------------------------------------------------------------
-
   estims <-
     cf_tmle(meta$data, meta$shifted_data, folds, "xyz", meta$node_list$outcome,
             cens, meta$determ, meta$tau, meta$outcome_type, meta$m, meta$m,
             dens_ratio, learners_outcome, pb, meta$weights_m)
-
-  # return estimates --------------------------------------------------------
 
   out <- compute_theta(
     estimator = "dr",
@@ -154,10 +145,10 @@ lmtp_tmle <- function(data, trt, outcome, baseline = NULL,
 #' @param bounds An optional vector of the bounds for continuous outcomes. If \code{NULL},
 #'  the bounds will be taken as the minimum and maximum of the observed data.
 #'  Should be left as \code{NULL} if the outcome type is binary.
-#' @param learners_outcome An optional \code{sl3} learner stack for estimation of the outcome
-#'  regression. If not specified, will default to using a generalized linear model.
-#' @param learners_trt An optional \code{sl3} learner stack for estimation of the exposure
-#'  mechanism. If not specified, will default to using a generalized linear model.
+#' @param learners_outcome A vector of \code{SuperLearner} algorithms for estimation
+#'  of the outcome regression. Default is \code{"SL.glm"}, a main effects GLM.
+#' @param learners_trt A vector of \code{SuperLearner} algorithms for estimation
+#'  of the exposure mechanism. Default is \code{"SL.glm"}, a main effects GLM.
 #' @param folds The number of folds to be used for cross-fitting. Minimum allowable number
 #' is two folds.
 #' @param bound Determines that maximum and minimum values (scaled) predictions
@@ -185,11 +176,8 @@ lmtp_tmle <- function(data, trt, outcome, baseline = NULL,
 lmtp_sdr <- function(data, trt, outcome, baseline = NULL,
                      time_vary = NULL, cens = NULL, shift, k = Inf,
                      outcome_type = c("binomial", "continuous"), id = NULL,
-                     bounds = NULL, learners_outcome = NULL,
-                     learners_trt = NULL, folds = 10, bound = 1e-5) {
-
-  # setup -------------------------------------------------------------------
-
+                     bounds = NULL, learners_outcome = "SL.glm",
+                     learners_trt = "SL.glm", folds = 10, bound = 1e-5) {
   meta <- Meta$new(
     data = data,
     trt = trt,
@@ -210,19 +198,13 @@ lmtp_sdr <- function(data, trt, outcome, baseline = NULL,
 
   pb <- progressr::progressor(meta$tau*folds*2)
 
-  # propensity --------------------------------------------------------------
-
   raw_ratio <- cf_r(meta$data, shift, folds, meta$trt, cens, meta$determ, meta$tau,
                     meta$node_list$trt, learners_trt, pb, meta$weights_r)
-
-  # sdr ---------------------------------------------------------------------
 
   estims <-
     cf_sdr(meta$data, meta$shifted_data, folds, "xyz", meta$node_list$outcome,
            cens, meta$determ, meta$tau, meta$outcome_type, meta$m, meta$m,
            raw_ratio, learners_outcome, pb, meta$weights_m)
-
-  # return estimates --------------------------------------------------------
 
   out <- compute_theta(
     estimator = "dr",
@@ -275,8 +257,8 @@ lmtp_sdr <- function(data, trt, outcome, baseline = NULL,
 #' @param bounds An optional vector of the bounds for continuous outcomes. If \code{NULL},
 #'  the bounds will be taken as the minimum and maximum of the observed data.
 #'  Should be left as \code{NULL} if the outcome type is binary.
-#' @param learners An optional \code{sl3} learner stack for estimation of the outcome
-#'  regression. If not specified, will default to using a generalized linear model.
+#' @param learners A vector of \code{SuperLearner} algorithms for estimation
+#'  of the outcome regression. Default is \code{"SL.glm"}, a main effects GLM.
 #' @param folds The number of folds to be used for cross-fitting. Minimum allowable number
 #'  is two folds.
 #' @param bound Determines that maximum and minimum values (scaled) predictions
@@ -301,10 +283,7 @@ lmtp_sdr <- function(data, trt, outcome, baseline = NULL,
 lmtp_sub <- function(data, trt, outcome, baseline = NULL,
                      time_vary = NULL, cens = NULL, shift, k = Inf,
                      outcome_type = c("binomial", "continuous"), id = NULL,
-                     bounds = NULL, learners = NULL, folds = 10, bound = 1e-5) {
-
-  # setup -------------------------------------------------------------------
-
+                     bounds = NULL, learners = "SL.glm", folds = 10, bound = 1e-5) {
   meta <- Meta$new(
     data = data,
     trt = trt,
@@ -325,13 +304,9 @@ lmtp_sub <- function(data, trt, outcome, baseline = NULL,
 
   pb <- progressr::progressor(meta$tau*folds)
 
-  # substitution ------------------------------------------------------------
-
   estims <- cf_sub(meta$data, meta$shifted_data, folds, "xyz", meta$node_list$outcome,
                    cens, meta$determ, meta$tau, meta$outcome_type,
                    learners, meta$m, pb, meta$weights_m)
-
-  # return estimates --------------------------------------------------------
 
   out <- compute_theta(
     estimator = "sub",
@@ -345,7 +320,6 @@ lmtp_sub <- function(data, trt, outcome, baseline = NULL,
     ))
 
   return(out)
-
 }
 
 #' LMTP IPW Estimator
@@ -375,8 +349,8 @@ lmtp_sub <- function(data, trt, outcome, baseline = NULL,
 #'  used for estimation at the given time point. Default is \code{Inf},
 #'  all time points.
 #' @param id An optional column name containing cluster level identifiers.
-#' @param learners An optional \code{sl3} learner stack for estimation of the exposure
-#'  mechanism. If not specified, will default to using a generalized linear model.
+#' @param learners A vector of \code{SuperLearner} algorithms for estimation
+#'  of the exposure mechanism. Default is \code{"SL.glm"}, a main effects GLM.
 #' @param folds The number of folds to be used for cross-fitting. Minimum allowable number
 #'  is two folds.
 #' @param bound Determines that maximum and minimum values (scaled) predictions
@@ -398,10 +372,7 @@ lmtp_sub <- function(data, trt, outcome, baseline = NULL,
 #' @example inst/examples/ipw-ex.R
 lmtp_ipw <- function(data, trt, outcome, baseline = NULL,
                      time_vary = NULL, cens = NULL, k = Inf, id = NULL, shift,
-                     learners = NULL, folds = 10, bound = 1e-5) {
-
-  # setup -------------------------------------------------------------------
-
+                     learners = "SL.glm", folds = 10, bound = 1e-5) {
   meta <- Meta$new(
     data = data,
     trt = trt,
@@ -422,8 +393,6 @@ lmtp_ipw <- function(data, trt, outcome, baseline = NULL,
 
   pb <- progressr::progressor(meta$tau*folds)
 
-  # propensity --------------------------------------------------------------
-
   dens_ratio <-
     ratio_ipw(
       recombine_ipw(
@@ -432,8 +401,6 @@ lmtp_ipw <- function(data, trt, outcome, baseline = NULL,
         )
       )
     )
-
-  # return estimates --------------------------------------------------------
 
   out <- compute_theta(
     estimator = "ipw",
@@ -447,5 +414,4 @@ lmtp_ipw <- function(data, trt, outcome, baseline = NULL,
     ))
 
   return(out)
-
 }
