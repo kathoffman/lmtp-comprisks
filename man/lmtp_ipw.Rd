@@ -14,9 +14,13 @@ lmtp_ipw(
   k = Inf,
   id = NULL,
   shift,
+  outcome_type = c("binomial", "continuous", "survival"),
   learners = "SL.glm",
   folds = 10,
-  bound = 1e-05
+  return_all_ratios = FALSE,
+  .bound = 1e-05,
+  .trim = 0.999,
+  .SL_folds = 10
 )
 }
 \arguments{
@@ -30,8 +34,8 @@ analysis, a vector containing the columns names of intermediate outcome variable
 outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 is binary, data should be coded as 0 and 1.}
 
-\item{baseline}{An optional vector of columns names of baseline covariates to be
-included for adjustment at every timepoint.}
+\item{baseline}{An optional vector containing the column names of baseline covariates to be
+included for adjustment at every time point.}
 
 \item{time_vary}{A list the same length as the number of time points of observation with
 the column names for new time-varying covariates introduced at each time point. The list
@@ -50,14 +54,26 @@ all time points.}
 \item{shift}{A two argument function that specifies how treatment variables should be shifted.
 See examples for how to specify shift functions for continuous, binary, and categorical exposures.}
 
+\item{outcome_type}{Outcome variable type (i.e., continuous, binomial, survival).}
+
 \item{learners}{A vector of \code{SuperLearner} algorithms for estimation
 of the exposure mechanism. Default is \code{"SL.glm"}, a main effects GLM.}
 
 \item{folds}{The number of folds to be used for cross-fitting. Minimum allowable number
 is two folds.}
 
-\item{bound}{Determines that maximum and minimum values (scaled) predictions
+\item{return_all_ratios}{Logical. If \code{TRUE}, the non-cumulative product density
+ratios will be returned. The default is \code{FALSE}.}
+
+\item{.bound}{Determines that maximum and minimum values (scaled) predictions
 will be bounded by. The default is 1e-5, bounding predictions by 1e-5 and 0.9999.}
+
+\item{.trim}{Determines the amount the density ratios should be trimmed.
+The default is 0.999, trimming the density ratios greater than the 0.999 percentile
+to the 0.999 percentile. A value of 1 indicates no trimming.}
+
+\item{.SL_folds}{Integer. Controls the number of splits to be used for fitting
+the Super Learner. The default is 10.}
 }
 \value{
 A list of class \code{lmtp} containing the following components:
@@ -69,6 +85,8 @@ A list of class \code{lmtp} containing the following components:
 \item{high}{NA}
 \item{shift}{The shift function specifying the treatment policy of interest.}
 \item{density_ratios}{An n x Tau matrix of the estimated density ratios.}
+\item{raw_ratios}{An n x Tau matrix of the estimated non-cumulative product density ratios.
+\code{NULL} if \code{return_all_ratios = FALSE}.}
 \item{weights_r}{A list the same length as \code{folds}, containing the Super Learner
 ensemble weights at each time-point for each fold for the propensity.}
 }
@@ -91,7 +109,8 @@ A <- 23 + 5*W + rnorm(n)
 Y <- 7.2*A + 3*W + rnorm(n)
 ex1_dat <- data.frame(W, A, Y)
 d <- function(data, x) data[[x]] - 5
-psi1.1 <- lmtp_ipw(ex1_dat, "A", "Y", baseline = "W", shift = d, folds = 2)
+psi1.1 <- lmtp_ipw(ex1_dat, "A", "Y", baseline = "W", shift = d, folds = 2,
+                   outcome_type = "continuous", .trim = 0.9975)
 psi1.1
 
 # Example 1.2
@@ -100,7 +119,8 @@ psi1.1
 # units only among observations whose observed A was above 80.
 # The true value under this intervention is about 513.
 d <- function(data, x) (data[[x]] > 80)*(data[[x]] - 15) + (data[[x]] <= 80)*data[[x]]
-psi1.2 <- lmtp_ipw(ex1_dat, "A", "Y", baseline = "W", shift = d, folds = 2)
+psi1.2 <- lmtp_ipw(ex1_dat, "A", "Y", baseline = "W", shift = d, folds = 2,
+                   outcome_type = "continuous")
 psi1.2
 
 # Example 2.1
@@ -198,7 +218,7 @@ if (require("twang")) {
   progressr::with_progress({
     psi3.1 <-
       lmtp_ipw(iptwExWide, a, "outcome", baseline = baseline, time_vary = tv,
-               shift = static_binary_on, folds = 2)
+               shift = static_binary_on, folds = 2, outcome_type = "continuous")
   })
   psi3.1
 }
@@ -227,8 +247,8 @@ psi4.2
 
 # Example 5.1
 # Time-to-event analysis with a binary time-invariant exposure. Interested in
-# the effect of treatment being given to all observations on the cumulative
-# incidence of our time-to-event outcome.
+# the effect of treatment being given to all observations on the probability of being event
+# free at the end of follow-up.
 a <- "trt"
 # for a survival problem, the outcome argument now takes a vector of outcomes
 # if an observation experiences the event prior to the end of follow-up, all future
@@ -238,7 +258,8 @@ cens <- paste0("C.", 0:5)
 baseline <- c("W1", "W2")
 progressr::with_progress({
   psi5.1 <- lmtp_ipw(sim_point_surv, a, y, baseline, cens = cens,
-                     shift = static_binary_on, folds = 2)
+                     shift = static_binary_on, folds = 2,
+                     outcome_type = "survival")
 })
 psi5.1
 }
