@@ -1,5 +1,11 @@
 setup_cv <- function(data, id, V = 10) {
-  origami::make_folds(data, cluster_ids = id, V = V)
+  # if (length(unique(id)) < V) {
+  #   warning("Number of unique ids is less than folds. Defaulting folds to the number of unique ids - 1.")
+  #   V <- length(unique(id)) - 1
+  # }
+
+  origami::make_folds(data, V = V)
+  # origami::make_folds(data, cluster_ids = id, V = V)
 }
 
 get_folded_data <- function(data, folds) {
