@@ -1,3 +1,9 @@
+# lmtp 1.0.1
+
+### Bug Fixes
+
+-   Fixed issue where functions fail if the number of SuperLearner folds is greater than the number of unique clusters.
+
 # lmtp 1.0.0
 
 ### New Features
