@@ -4,8 +4,11 @@ context("Node list creation")
 test_that("create proper node lists, t > 1", {
   verify_output(test_path("test-node-list.txt"), {
     a <- c("A_1", "A_2", "A_3", "A_4")
-    bs <- c("W")
-    nodes <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+    bs <- list(trt = c("W"))
+    nodes <- list(
+      trt = list(NULL, c("L_2"), c("L_3"), c("L_4")),
+      outcome = list(c("L_1"), c("L_2"), NULL, c("L_4"))
+    )
 
     # k = NULL
     create_node_list(a, 4, nodes, baseline = NULL, k = NULL)

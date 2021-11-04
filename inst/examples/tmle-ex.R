@@ -16,7 +16,7 @@
   }
 
   lmtp_tmle(
-    ex1_dat, "A", "Y", "W", shift = policy,
+    ex1_dat, "A", "Y", list(trt = c("W"), outcome = c("W")), shift = policy,
     outcome_type = "continuous",
     folds = 2, intervention_type = "mtp"
   )
@@ -30,7 +30,8 @@
   head(sim_t4)
 
   A <- c("A_1", "A_2", "A_3", "A_4")
-  L <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+  L <- list(trt = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")),
+            outcome = list(c("L_1"), c("L_2"), NULL, c("L_4")))
   policy <- function(data, trt) {
     a <- data[[trt]]
     (a - 1) * (a - 1 >= 1) + a * (a - 1 < 1)
