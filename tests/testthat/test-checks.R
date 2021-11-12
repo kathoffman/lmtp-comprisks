@@ -12,7 +12,7 @@ test_that("detects incorrect folds", {
 
 test_that("variables dont exist", {
   a <- c("A", "A2")
-  nodes <- list(c("L1"), c("L2"))
+  nodes <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   expect_error(lmtp_sub(sim_cens, a, "Y", nodes, baseline = NULL,
                         cens, k = 1, shift = function(x) x + 0.5))
@@ -20,7 +20,7 @@ test_that("variables dont exist", {
 
 test_that("time_vary is a list", {
   a <- c("A1", "A2")
-  nodes <- c("L1", "L2")
+  nodes <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   expect_error(lmtp_sub(sim_cens, a, "Y", nodes, baseline = NULL,
                         cens, k = 1, shift = function(x) x + 0.5))
@@ -28,7 +28,7 @@ test_that("time_vary is a list", {
 
 test_that("variable length mismatch", {
   a <- c("A1")
-  nodes <- list(c("L1"), c("L2"))
+  nodes <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   expect_error(
     lmtp_sub(sim_cens, a, "Y", nodes, baseline = NULL,
@@ -49,7 +49,7 @@ test_that("no variation is caught", {
 
 test_that("only 0 and 1", {
   a <- c("A1", "A2")
-  nodes <- list(c("L1"), c("L2"))
+  nodes <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   sim_cens$Y <- sample(c(3, 4), nrow(sim_cens), replace = TRUE)
   expect_error(
@@ -60,7 +60,7 @@ test_that("only 0 and 1", {
 
 test_that("detect survival mismatch", {
   a <- c("A1", "A2")
-  nodes <- list(c("L1"), c("L2"))
+  nodes <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   expect_error(
     lmtp_sub(sim_cens, a, "Y", nodes, baseline = NULL,
@@ -71,7 +71,7 @@ test_that("detect survival mismatch", {
   a <- "trt"
   y <- paste0("Y.", 1:6)
   cens <- paste0("C.", 0:5)
-  baseline <- c("W1", "W2")
+  baseline <- list(trt = c("W1", "W2"), outcome = c("W1", "W2"))
   expect_error(
     lmtp_ipw(sim_point_surv, a, y, baseline, cens = cens,
              shift = static_binary_on, folds = 2)
@@ -80,7 +80,8 @@ test_that("detect survival mismatch", {
 
 test_that("detect factors", {
   a <- c("A_1", "A_2", "A_3", "A_4")
-  tv <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+  tv <- list(trt = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")),
+             outcome = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")))
   for (i in a) {
     sim_t4[[i]] <- factor(sim_t4[[i]], levels = 0:5, ordered = TRUE)
   }
@@ -103,7 +104,7 @@ test_that("detect factors", {
 
 test_that("detect issues with supplying shifted", {
   a <- c("A1", "A2")
-  tv <- list(c("L1"), c("L2"))
+  tv <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   cens <- c("C1", "C2")
   y <- "Y"
   sc <- shift_data(sim_cens, a, cens, function(data, trt) data[[trt]] + 0.5)

@@ -11,11 +11,8 @@
 #'  analysis, a vector containing the columns names of intermediate outcome variables and the final
 #'  outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 #'  is binary, data should be coded as 0 and 1.
-#' @param baseline An optional vector containing the column names of baseline covariates to be
-#'  included for adjustment at every time point.
-#' @param time_vary A list the same length as the number of time points of observation with
-#'  the column names for new time-varying covariates introduced at each time point. The list
-#'  should be ordered following the time ordering of the model.
+#' @param baseline An optional list. See examples.
+#' @param time_vary An optional list. See examples.
 #' @param cens An optional vector of column names of censoring indicators the same
 #'  length as the number of time points of observation. If missingness in the outcome is
 #'  present or if time-to-event outcome, must be provided.
@@ -160,11 +157,8 @@ lmtp_tmle <- function(data, trt, outcome, baseline = NULL, time_vary = NULL,
 #'  analysis, a vector containing the columns names of intermediate outcome variables and the final
 #'  outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 #'  is binary, data should be coded as 0 and 1.
-#' @param baseline An optional vector containing the column names of baseline covariates to be
-#'  included for adjustment at every time point.
-#' @param time_vary A list the same length as the number of time points of observation with
-#'  the column names for new time-varying covariates introduced at each time point. The list
-#'  should be ordered following the time ordering of the model.
+#' @param baseline An optional list. See examples.
+#' @param time_vary An optional list. See examples.
 #' @param cens An optional vector of column names of censoring indicators the same
 #'  length as the number of time points of observation. If missingness in the outcome is
 #'  present or if time-to-event outcome, must be provided.
@@ -310,11 +304,8 @@ lmtp_sdr <- function(data, trt, outcome, baseline = NULL, time_vary = NULL,
 #'  analysis, a vector containing the columns names of intermediate outcome variables and the final
 #'  outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 #'  is binary, data should be coded as 0 and 1.
-#' @param baseline An optional vector containing the column names of baseline covariates to be
-#'  included for adjustment at every time point.
-#' @param time_vary A list the same length as the number of time points of observation with
-#'  the column names for new time-varying covariates introduced at each time point. The list
-#'  should be ordered following the time ordering of the model.
+#' @param baseline An optional list. See examples.
+#' @param time_vary An optional list. See examples.
 #' @param cens An optional vector of column names of censoring indicators the same
 #'  length as the number of time points of observation. If missingness in the outcome is
 #'  present or if time-to-event outcome, must be provided.
@@ -427,11 +418,8 @@ lmtp_sub <- function(data, trt, outcome, baseline = NULL, time_vary = NULL, cens
 #'  analysis, a vector containing the columns names of intermediate outcome variables and the final
 #'  outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 #'  is binary, data should be coded as 0 and 1.
-#' @param baseline An optional vector containing the column names of baseline covariates to be
-#'  included for adjustment at every time point.
-#' @param time_vary A list the same length as the number of time points of observation with
-#'  the column names for new time-varying covariates introduced at each time point. The list
-#'  should be ordered following the time ordering of the model.
+#' @param baseline An optional list. See examples.
+#' @param time_vary An optional list. See examples.
 #' @param cens An optional vector of column names of censoring indicators the same
 #'  length as the number of time points of observation. If missingness in the outcome is
 #'  present or if time-to-event outcome, must be provided.

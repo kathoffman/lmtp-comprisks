@@ -29,9 +29,9 @@ C2[!uncensored] <- 0
 Y[uncensored] <- rexpit(W[uncensored] - 0.6 * A1[uncensored] + L[uncensored] - 0.8 * A2[uncensored])
 sim <- data.frame(W, A1, C1, L, A2, C2, Y)
 a <- c("A1", "A2")
-baseline <- "W"
+baseline <- list(trt = "W", outcome = "W")
 cens <- c("C1", "C2")
-nodes <- list(c(NULL), c("L"))
+nodes <- list(trt = list(c(NULL), c("L")), outcome = list(c(NULL), c("L")))
 
 # static on or off at all time points
 # truth = 0.308

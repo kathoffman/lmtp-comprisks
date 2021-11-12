@@ -16,7 +16,7 @@
   }
 
   lmtp_tmle(
-    ex1_dat, "A", "Y", list(trt = c("W"), outcome = c("W")), shift = policy,
+    ex1_dat, "A", "Y", list(trt = "W", outcome = "W"), shift = policy,
     outcome_type = "continuous",
     folds = 2, intervention_type = "mtp"
   )
@@ -113,8 +113,9 @@
     data("iptwExWide", package = "twang")
 
     A <- paste0("tx", 1:3)
-    W <- c("gender", "age")
-    L <- list(c("use0"), c("use1"), c("use2"))
+    W <- list(trt = c("gender", "age"), outcome = c("gender", "age"))
+    L <- list(trt = list(c("use0"), c("use1"), c("use2")),
+              outcome = list(c("use0"), c("use1"), c("use2")))
 
     lmtp_tmle(iptwExWide, A, "outcome", baseline = W, time_vary = L,
               shift = static_binary_on, outcome_type = "continuous",
@@ -128,7 +129,7 @@
   head(sim_cens)
 
   A <- c("A1", "A2")
-  L <- list(c("L1"), c("L2"))
+  L <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   C <- c("C1", "C2")
   Y <- "Y"
 
@@ -144,7 +145,7 @@
   A <- "trt"
   Y <- paste0("Y.", 1:6)
   C <- paste0("C.", 0:5)
-  W <- c("W1", "W2")
+  W <- list(trt = c("W1", "W2"), outcome = c("W1", "W2"))
 
   lmtp_tmle(sim_point_surv, A, Y, W, cens = C, folds = 2,
             shift = static_binary_on, outcome_type = "survival")

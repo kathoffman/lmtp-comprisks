@@ -13,7 +13,7 @@ estimate_sub <- function(training, shifted, validation, validation_shifted, outc
 
     fit <- run_ensemble(
       training[i & rt, ][[outcome]],
-      training[i & rt, vars],
+      training[i & rt, vars, drop = FALSE],
       check_variation(
         training[i & rt, ][[outcome]],
         learners
@@ -25,8 +25,8 @@ estimate_sub <- function(training, shifted, validation, validation_shifted, outc
 
     sl_weights[[tau]] <- extract_sl_weights(fit)
 
-    training[jt & rt, pseudo] <- SL_predict(fit, shifted[jt & rt, vars])
-    m[jv & rv, tau] <- SL_predict(fit, validation_shifted[jv & rv, vars])
+    training[jt & rt, pseudo] <- SL_predict(fit, shifted[jt & rt, vars, drop = FALSE])
+    m[jv & rv, tau] <- SL_predict(fit, validation_shifted[jv & rv, vars, drop = FALSE])
 
     training[!rt, pseudo] <- 0
     m[!rv, tau] <- 0
@@ -72,7 +72,7 @@ estimate_tmle <- function(training, shifted, validation, validation_shifted,
 
     fit <- run_ensemble(
       training[i & rt, ][[outcome]],
-      training[i & rt, vars],
+      training[i & rt, vars, drop = FALSE],
       check_variation(training[i & rt, ][[outcome]], learners),
       outcome_type,
       id = training[i & rt, ][["lmtp_id"]],
@@ -81,10 +81,10 @@ estimate_tmle <- function(training, shifted, validation, validation_shifted,
 
     sl_weights[[tau]] <- extract_sl_weights(fit)
 
-    m_natural$train[jt & rt, tau] <- SL_predict(fit, training[jt & rt, vars])
-    m_shifted$train[jt & rt, tau] <- SL_predict(fit, shifted[jt & rt, vars])
-    m_natural$valid[jv & rv, tau] <- SL_predict(fit, validation[jv & rv, vars])
-    m_shifted$valid[jv & rv, tau] <- SL_predict(fit, validation_shifted[jv & rv, vars])
+    m_natural$train[jt & rt, tau] <- SL_predict(fit, training[jt & rt, vars, drop = FALSE])
+    m_shifted$train[jt & rt, tau] <- SL_predict(fit, shifted[jt & rt, vars, drop = FALSE])
+    m_natural$valid[jv & rv, tau] <- SL_predict(fit, validation[jv & rv, vars, drop = FALSE])
+    m_shifted$valid[jv & rv, tau] <- SL_predict(fit, validation_shifted[jv & rv, vars, drop = FALSE])
 
     wts <- {
       if (is.null(weights))
@@ -169,7 +169,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
     if (tau == max) {
       fit <- run_ensemble(
         training[i & rt, ][[outcome]],
-        training[i & rt, vars],
+        training[i & rt, vars, drop = FALSE],
         check_variation(
           training[i & rt, ][[outcome]],
           learners
@@ -182,16 +182,16 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       sl_weights[[tau]] <- extract_sl_weights(fit)
 
       m_natural$train[jt & rt, tau] <-
-        SL_predict(fit, training[jt & rt, vars])
+        SL_predict(fit, training[jt & rt, vars, drop = FALSE])
 
       m_shifted$train[jt & rt, tau] <-
-        SL_predict(fit, shifted[jt & rt, vars])
+        SL_predict(fit, shifted[jt & rt, vars, drop = FALSE])
 
       m_natural$valid[jv & rv, tau] <-
-        SL_predict(fit, validation[jv & rv, vars])
+        SL_predict(fit, validation[jv & rv, vars, drop = FALSE])
 
       m_shifted$valid[jv & rv, tau] <-
-        SL_predict(fit, validation_shifted[jv & rv, vars])
+        SL_predict(fit, validation_shifted[jv & rv, vars, drop = FALSE])
 
       m_natural$train[!rt, tau] <- 0
       m_shifted$train[!rt, tau] <- 0
@@ -211,7 +211,7 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
 
       fit <- run_ensemble(
         training[i & rt, ][[pseudo]],
-        training[i & rt, vars],
+        training[i & rt, vars, drop = FALSE],
         check_variation(
           training[i & rt, ][[pseudo]],
           learners
@@ -224,16 +224,16 @@ estimate_sdr <- function(training, shifted, validation, validation_shifted,
       sl_weights[[tau]] <- extract_sl_weights(fit)
 
       m_natural$train[jt & rt, tau] <-
-        SL_predict(fit, training[jt & rt, vars])
+        SL_predict(fit, training[jt & rt, vars, drop = FALSE])
 
       m_shifted$train[jt & rt, tau] <-
-        SL_predict(fit, shifted[jt & rt, vars])
+        SL_predict(fit, shifted[jt & rt, vars, drop = FALSE])
 
       m_natural$valid[jv & rv, tau] <-
-        SL_predict(fit, validation[jv & rv, vars])
+        SL_predict(fit, validation[jv & rv, vars, drop = FALSE])
 
       m_shifted$valid[jv & rv, tau] <-
-        SL_predict(fit, validation_shifted[jv & rv, vars])
+        SL_predict(fit, validation_shifted[jv & rv, vars, drop = FALSE])
 
       m_natural$train[!rt, tau] <- 0
       m_shifted$train[!rt, tau] <- 0

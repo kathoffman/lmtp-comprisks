@@ -13,14 +13,15 @@ Y.0 <- rbinom(n, size = 1, prob = plogis(-1 + 0 - 0.1 * W1 + 0.3 * W2))
 Y <- Y.1 * A + Y.0 * (1 - A)
 tmp <- data.frame(W1, W2, A, Y, Y.1, Y.0)
 truth <- mean(tmp$Y.1)
+w <- list(trt = c("W1", "W2"), outcome = c("W1", "W2"))
 
-sub <- lmtp_sub(tmp, "A", "Y", baseline = c("W1", "W2"), shift = static_binary_on, folds = 2)
+sub <- lmtp_sub(tmp, "A", "Y", baseline = w, shift = static_binary_on, folds = 2)
 
-ipw <- lmtp_ipw(tmp, "A", "Y", baseline = c("W1", "W2"), shift = static_binary_on, folds = 2)
+ipw <- lmtp_ipw(tmp, "A", "Y", baseline = w, shift = static_binary_on, folds = 2)
 
-tmle <- lmtp_tmle(tmp, "A", "Y", baseline = c("W1", "W2"), shift = static_binary_on, folds = 2)
+tmle <- lmtp_tmle(tmp, "A", "Y", baseline = w, shift = static_binary_on, folds = 2)
 
-sdr <- lmtp_sdr(tmp, "A", "Y", baseline = c("W1", "W2"), shift = static_binary_on, folds = 2)
+sdr <- lmtp_sdr(tmp, "A", "Y", baseline = w, shift = static_binary_on, folds = 2)
 
 # tests
 test_that("point treatment fidelity", {

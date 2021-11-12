@@ -16,7 +16,7 @@
   }
 
   lmtp_ipw(
-    ex1_dat, "A", "Y", "W",
+    ex1_dat, "A", "Y", list(trt = "W", outcome = "W"),
     shift = policy, outcome_type = "continuous",
     folds = 2, intervention_type = "mtp"
   )
@@ -30,7 +30,8 @@
   head(sim_t4)
 
   A <- c("A_1", "A_2", "A_3", "A_4")
-  L <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+  L <- list(trt = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")),
+            outcome = list(c("L_1"), c("L_2"), NULL, c("L_4")))
 
   policy <- function(data, trt) {
     a <- data[[trt]]
@@ -118,8 +119,9 @@
     data("iptwExWide", package = "twang")
 
     A <- paste0("tx", 1:3)
-    W <- c("gender", "age")
-    L <- list(c("use0"), c("use1"), c("use2"))
+    W <- list(trt = c("gender", "age"), outcome = c("gender", "age"))
+    L <- list(trt = list(c("use0"), c("use1"), c("use2")),
+              outcome = list(c("use0"), c("use1"), c("use2")))
 
     lmtp_ipw(
       iptwExWide, A, "outcome", baseline = W, time_vary = L,
@@ -135,7 +137,7 @@
   head(sim_cens)
 
   A <- c("A1", "A2")
-  L <- list(c("L1"), c("L2"))
+  L <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   C <- c("C1", "C2")
   Y <- "Y"
 
@@ -151,7 +153,7 @@
   A <- "trt"
   Y <- paste0("Y.", 1:6)
   C <- paste0("C.", 0:5)
-  W <- c("W1", "W2")
+  W <- list(trt = c("W1", "W2"), outcome = c("W1", "W2"))
 
   lmtp_ipw(sim_point_surv, A, Y, W, cens = C, folds = 2,
             shift = static_binary_on, outcome_type = "survival")

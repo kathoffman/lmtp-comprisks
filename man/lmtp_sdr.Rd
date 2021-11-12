@@ -38,12 +38,9 @@ analysis, a vector containing the columns names of intermediate outcome variable
 outcome variable ordered by time. Only numeric values are allowed. If the outcome type
 is binary, data should be coded as 0 and 1.}
 
-\item{baseline}{An optional vector containing the column names of baseline covariates to be
-included for adjustment at every time point.}
+\item{baseline}{An optional list. See examples.}
 
-\item{time_vary}{A list the same length as the number of time points of observation with
-the column names for new time-varying covariates introduced at each time point. The list
-should be ordered following the time ordering of the model.}
+\item{time_vary}{An optional list. See examples.}
 
 \item{cens}{An optional vector of column names of censoring indicators the same
 length as the number of time points of observation. If missingness in the outcome is
@@ -134,7 +131,7 @@ continuous, or time-to-event outcomes. Supports binary, categorical, and continu
   }
 
   lmtp_sdr(
-    ex1_dat, "A", "Y", "W", shift = policy,
+    ex1_dat, "A", "Y", list(trt = "W", outcome = "W"), shift = policy,
     outcome_type = "continuous",
     folds = 2, intervention_type = "mtp"
   )
@@ -148,7 +145,8 @@ continuous, or time-to-event outcomes. Supports binary, categorical, and continu
   head(sim_t4)
 
   A <- c("A_1", "A_2", "A_3", "A_4")
-  L <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+  L <- list(trt = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")),
+            outcome = list(c("L_1"), c("L_2"), NULL, c("L_4")))
 
   policy <- function(data, trt) {
     a <- data[[trt]]
@@ -233,8 +231,9 @@ continuous, or time-to-event outcomes. Supports binary, categorical, and continu
     data("iptwExWide", package = "twang")
 
     A <- paste0("tx", 1:3)
-    W <- c("gender", "age")
-    L <- list(c("use0"), c("use1"), c("use2"))
+    W <- list(trt = c("gender", "age"), outcome = c("gender", "age"))
+    L <- list(trt = list(c("use0"), c("use1"), c("use2")),
+              outcome = list(c("use0"), c("use1"), c("use2")))
 
     lmtp_sdr(
       iptwExWide, A, "outcome", baseline = W, time_vary = L,
@@ -250,7 +249,7 @@ continuous, or time-to-event outcomes. Supports binary, categorical, and continu
   head(sim_cens)
 
   A <- c("A1", "A2")
-  L <- list(c("L1"), c("L2"))
+  L <- list(trt = list(c("L1"), c("L2")), outcome = list(c("L1"), c("L2")))
   C <- c("C1", "C2")
   Y <- "Y"
 
@@ -266,7 +265,7 @@ continuous, or time-to-event outcomes. Supports binary, categorical, and continu
   A <- "trt"
   Y <- paste0("Y.", 1:6)
   C <- paste0("C.", 0:5)
-  W <- c("W1", "W2")
+  W <- list(trt = c("W1", "W2"), outcome = c("W1", "W2"))
 
   lmtp_sdr(
     sim_point_surv, A, Y, W, cens = C, folds = 2,
