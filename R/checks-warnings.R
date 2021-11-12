@@ -62,7 +62,7 @@ check_scaled_conflict <- function(data) {
 
 check_variation <- function(outcome, learners) {
   if (sd(outcome) < .Machine$double.eps) {
-    return("SL.mean")
+    return(sl3::make_learner(sl3::Lrnr_mean))
   }
   learners
 }
@@ -237,6 +237,7 @@ check_factors <- function(data, trt, baseline, nodes) {
 }
 
 check_shifted <- function(data, shifted, outcome, baseline, nodes, cens) {
+  shifted <- as.data.frame(shifted)
   unchngd <- c(outcome, baseline, unlist(nodes))
   shifted <- as.data.frame(shifted)
 
