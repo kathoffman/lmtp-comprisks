@@ -1,6 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+**NOT MAIN VERSION OF LMTP! THIS VERSION IMPLEMENTS DIFFERENTS COVARIATE
+SETS FOR TREATMENT AND OUTCOME REGRESSIONS.**
+
 # lmtp <img src='man/figures/lmtp.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
@@ -144,7 +147,8 @@ treatment variables and time-varying covariates.
 # treatment nodes, a character vector of length 4
 A <- c("A_1", "A_2", "A_3", "A_4")
 # time varying nodes, a list of length 4
-L <- list(c("L_1"), c("L_2"), c("L_3"), c("L_4"))
+L <- list(trt = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")), 
+          outcome = list(c("L_1"), c("L_2"), c("L_3"), c("L_4")))
 ```
 
 We can now estimate the effect of our treatment policy, `d`. In this
